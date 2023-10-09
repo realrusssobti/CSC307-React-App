@@ -86,7 +86,9 @@ app.get('/users/:id', (req, res) => {
 });
 
 const addUser = (user) => {
-    user['id'] = generateRandomIDNumber;
+    let idNumber = generateRandomIDNumber().toString();
+    // add id to user
+    user.id = idNumber;
     users['users_list'].push(user);
     return users;
 }

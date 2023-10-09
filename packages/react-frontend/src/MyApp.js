@@ -47,7 +47,9 @@ function MyApp() {
 
     function updateList(person) {
         postUser(person)
-          .then(() => setCharacters([...characters, person]))
+          .then((res) => res.json()).then((json) => {
+            setCharacters(characters.concat(json));
+        })
           .catch((error) => {
             console.log(error);
           })
