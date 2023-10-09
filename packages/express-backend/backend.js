@@ -1,10 +1,15 @@
 // backend.js
 import express from "express";
+import cors from "cors";
 
 const app = express();
 const port = 8000;
 
+app.use(cors());
 app.use(express.json());
+/* Example Bad ID Generator*/
+const generateRandomIDNumber = () => Math.floor(Math.random()*69420);
+
 
 const users = {
     users_list : [
@@ -81,14 +86,19 @@ app.get('/users/:id', (req, res) => {
 });
 
 const addUser = (user) => {
+    user['id'] = generateRandomIDNumber;
     users['users_list'].push(user);
-    return user;
+    return users;
 }
 
 app.post('/users', (req, res) => {
     const userToAdd = req.body;
     addUser(userToAdd);
-    res.send();
+    let result = findUserByName(userToAdd.name);
+    if (result === undefined){
+        res.status(420).send("Something went wrong")
+    }
+    res.status(201).send(result);
 });
 
 /* Delete User Code */
@@ -102,6 +112,20 @@ app.delete('/users/:id', (req, res) => {
     deleteUser(id);
     res.send();
 });
+
+app.delete('/users', (req, res) => {
+    // get the name and job to delete
+    const name = req.query.name;
+    const job = req.query.job;
+    // get the user to delete
+    let result = findUserByName(name);
+    result = result.filter((user) => user['job'] === job);
+    result = result[0];
+    // delete the user
+    deleteUser(result['id']);
+    res.send();
+});
+
 
 
 app.get('/', (req, res) => {
